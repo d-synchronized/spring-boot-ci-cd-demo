@@ -92,18 +92,12 @@ node () { //node('worker_node')
 }
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
-    //def downloadSpec = readFile 'aql-download.json'
-    def downloadSpec = readFile 'download.json'
+    def downloadSpec = readFile 'aql-download.json'
+    //def downloadSpec = readFile 'download.json'
     def uploadSpec = readFile 'props-upload.json'
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
 
-    def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
-    
-    // Upload to Artifactory.
-    def buildInfo = server.upload spec: uploadSpec
-    server.publishBuildInfo buildInfo
-    
     def buildInfo1 = server.download spec: downloadSpec
     buildInfo1.append buildInfo
     return buildInfo1
