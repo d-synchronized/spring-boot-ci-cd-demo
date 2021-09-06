@@ -17,8 +17,8 @@ node () { //node('worker_node')
    try {
       stage('Checkout Source Code') { 
           echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
-          bat "git config user.name 'Dishant Anand'"
-          bat "git config user.email d.synchronized@gmail.com"
+          //bat "git config user.name 'Dishant Anand'"
+          //bat "git config user.email d.synchronized@gmail.com"
           
           checkout([$class: 'GitSCM', 
                     branches: [[name: "*/${params.BRANCH}"]], 
