@@ -62,7 +62,7 @@ node () { //node('worker_node')
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
                
-               qaBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
+               qaBuildDownloadFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
