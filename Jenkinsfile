@@ -92,15 +92,16 @@ node () { //node('worker_node')
 }
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
+    def server = Artifactory.server 'DSYNC_JFROG_INSTANCE'
+    
     //def downloadSpec = readFile 'aql-download.json'
     def downloadSpec = readFile 'download.json'
     def uploadSpec = readFile 'props-upload.json'
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
 
-    def buildInfo1 = server.download spec: downloadSpec
-    buildInfo1.append buildInfo
-    return buildInfo1
+    def buildInfo2 = server.download spec: downloadSpec
+    return buildInfo2
 }
 
 def deleteTag(String tagVersionCreated) { 
