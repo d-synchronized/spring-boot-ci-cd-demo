@@ -74,7 +74,7 @@ node () { //node('worker_node')
          def downloadSpec = readFile 'download.json'
          buildInfo = server.download spec: downloadSpec
          
-         echo "${downloadSpec.files[1].target}"
+         echo "${downloadSpec}"
          //deploy adapters: [tomcat8(url: 'http://localhost:8666/', credentialsId: 'tomcat')], war: 'target/*.war'
      }
      
