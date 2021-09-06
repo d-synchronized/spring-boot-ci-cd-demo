@@ -46,6 +46,7 @@ node () { //node('worker_node')
             bat([script: 'mvn clean install deploy'])
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+              downloadArtifactory('','','')
           }     
      }
       
@@ -84,6 +85,24 @@ node () { //node('worker_node')
        echo '***************************************************'
    }
    
+}
+
+def downloadArtifactory(String localPath, String repository, String remotePath) {
+    def downloadSpec = """{
+        "files": [
+                {
+                    "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/0.0.1-SNAPSHOT/spring-boot-ci-cd-demo-0.0.1-20210906.104257-1.war",
+                    "target": "spring-boot-ci-cd-demo",
+                }
+            ]
+        }"""
+
+    //echo "${downloadSpec}"
+    //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
+
+    def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
+    def buildInfo = server.download spec: downloadSpec
+    return buildInfo
 }
 
 def deleteTag(String tagVersionCreated) { 
