@@ -59,8 +59,10 @@ node () { //node('worker_node')
             echo "Building RELEASE Artifact"
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             server.publishBuildInfo buildInfo
-         } else{
+         } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+              echo "Dropping SNAPSHOT from the version"
+              bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
           }     
      }
       
@@ -74,14 +76,24 @@ node () { //node('worker_node')
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
+         def failNoOp
          if(DEPLOY_TO_DEV) {
             def downloadSpec = readFile 'download-snapshots.json'
-            buildInfo = server.download spec: downloadSpec
+            buildInfo = server.download spec: downloadSpec, failNoOp: true
+            def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
+            if(failNoOp){
+               def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
+               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}"
+            }
          }else{
             def downloadSpec = readFile 'download-releases.json'
-            buildInfo = server.download spec: downloadSpec
+            buildInfo = server.download spec: downloadSpec, failNoOp: true
+            def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}/*.war"
+            if(failNoOp){
+               def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
+               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}"
+            }
          }
-         //deploy adapters: [tomcat8(url: 'http://localhost:8666/', credentialsId: 'tomcat')], war: 'target/*.war'
      }
      
        currentBuild.result = 'SUCCESS'
