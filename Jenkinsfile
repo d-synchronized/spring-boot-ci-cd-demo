@@ -76,13 +76,12 @@ node () { //node('worker_node')
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
     def downloadSpec = readFile 'aql-download.json'
-
+    def uploadSpec = readFile 'props-upload.json'
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
 
     def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
     
-    def uploadSpec = readFile 'exclude-upload.json'
     // Upload to Artifactory.
     def buildInfo = server.upload spec: uploadSpec
     
