@@ -75,7 +75,7 @@ node () { //node('worker_node')
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
-               qaBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
+               qaBuildDownloadFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             }
             rtMaven.deployer.deployArtifacts = false
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
