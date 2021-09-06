@@ -48,8 +48,6 @@ node () { //node('worker_node')
          
          if("${params.BRANCH}" == 'development'){
             if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
-               echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
-             
                echo "Building SNAPSHOT Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
@@ -61,7 +59,6 @@ node () { //node('worker_node')
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
             } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
-               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             }  
