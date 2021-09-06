@@ -47,6 +47,7 @@ node () { //node('worker_node')
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
          DEPLOY_FROM_REPO = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
+         pom = readMavenPom file: 'pom.xml'
          
          if("${params.BRANCH}" == 'development'){
             if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
