@@ -16,12 +16,11 @@ node () { //node('worker_node')
    def tagVersionCreated = ''
    try {
       stage('Checkout Source Code') { 
-         echo "*******Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
-             echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
+         echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
              //bat "git config user.name 'Dishant Anand'"
              //bat "git config user.email d.synchronized@gmail.com"
           
-            checkout([$class: 'GitSCM', 
+         checkout([$class: 'GitSCM', 
                     branches: [[name: "*/${params.BRANCH}"]], 
                     extensions: [], 
                     userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
