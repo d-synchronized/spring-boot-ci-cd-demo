@@ -100,7 +100,7 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
 
-    def buildInfo2 = server.download spec: downloadSpec
+    def buildInfo2 = server.download spec: downloadSpec, buildInfo: buildInfo
     return buildInfo2
 }
 

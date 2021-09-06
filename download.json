@@ -3,7 +3,7 @@
         {
             "pattern": "spring-boot-ci-cd-demo-*.war",
             "target": "Bazinga/demo/",
-            "recursive": "false",
+            "recursive": "true",
             "flat" : "true",
             "build" : "spring-boot-job/LATEST"
         }
