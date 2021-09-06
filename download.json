@@ -1,7 +1,8 @@
-{
+
+ {
     "files": [
         {
-            "pattern": "cetera-maven-releases/com/example/spring-boot-ci-cd-demo/*/spring-boot-ci-cd-demo-*.war",
+            "pattern": "cetera-maven-releases/*/**/spring-boot-ci-cd-demo-*.war",
             "target": "Bazinga/demo/",
             "recursive": "true",
             "flat" : "true",
