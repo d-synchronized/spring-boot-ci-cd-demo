@@ -81,10 +81,11 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
     
     // Upload to Artifactory.
-    //def buildInfo = server.upload spec: uploadSpec
+    def buildInfo = server.upload spec: uploadSpec
     
-    def buildInfo = server.download spec: downloadSpec
-    return buildInfo
+    def buildInfo1 = server.download spec: downloadSpec
+    buildInfo1.append buildInfo
+    return buildInfo1
 }
 
 def deleteTag(String tagVersionCreated) { 
