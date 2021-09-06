@@ -38,7 +38,7 @@ node () { //node('worker_node')
         // Tool name from Jenkins configuration
         rtMaven.tool = 'MAVEN_BUILD_TOOL'
         rtMaven.deployer releaseRepo: 'cetera-maven-releases', snapshotRepo: 'cetera-maven-snapshots', server: server
-        rtMaven.resolver releaseRepo: 'cetera-maven-virtual-releases', snapshotRepo: 'cetera-maven-virtual-snapshots', server: server
+        //rtMaven.resolver releaseRepo: 'cetera-maven-virtual-releases', snapshotRepo: 'cetera-maven-virtual-snapshots', server: server
         buildInfo = Artifactory.newBuildInfo()
       }
       
