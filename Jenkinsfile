@@ -23,7 +23,7 @@ node () { //node('worker_node')
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
          if(DEPLOY_TO_DEV || VERSION_SET){
-             cho "*******Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+             echo "*******Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
              echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
              //bat "git config user.name 'Dishant Anand'"
              //bat "git config user.email d.synchronized@gmail.com"
