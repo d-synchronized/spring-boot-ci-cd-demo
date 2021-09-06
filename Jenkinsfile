@@ -1,7 +1,9 @@
 //Groovy Pipeline
 node () { //node('worker_node')
 
+   def server
    def rtMaven = Artifactory.newMavenBuild()
+   def buildInfo
 
    properties([
       parameters([
@@ -18,7 +20,7 @@ node () { //node('worker_node')
    def previousPomVersion = ''
    def tagVersionCreated = ''
    try {
-      stage('Checkout Source Code') { 
+      stage('Clone') { 
          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
              //bat "git config user.name 'Dishant Anand'"
              //bat "git config user.email d.synchronized@gmail.com"
@@ -28,6 +30,18 @@ node () { //node('worker_node')
                     extensions: [], 
                     userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
       }
+      
+      stage ('Artifactory configuration') {
+        // Obtain an Artifactory server instance, defined in Jenkins --> Manage Jenkins --> Configure System:
+        server = Artifactory.server 'DSYNC_JFROG_INSTANCE'
+
+        // Tool name from Jenkins configuration
+        rtMaven.tool = 'MAVEN_BUILD_TOOL'
+        rtMaven.deployer releaseRepo: 'cetera-maven-releases', snapshotRepo: 'cetera-maven-snapshots', server: server
+        rtMaven.resolver releaseRepo: 'cetera-maven-virtual-releases', snapshotRepo: 'cetera-maven-virtual-snapshots', server: server
+        buildInfo = Artifactory.newBuildInfo()
+      }
+      
       
       stage('Build & Deploy') {
          DEPLOY_TO_PROD = "${params.ENVIRONMENT}"  == 'PROD' ? true : false
@@ -40,13 +54,15 @@ node () { //node('worker_node')
             echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
             echo "Building SNAPSHOT Artifact"
-            bat([script: 'mvn clean install deploy']) 
+            //bat([script: 'mvn clean install']) 
+            rtMaven.run pom: 'spring-boot-ci-cd-demo/pom.xml', goals: 'clean install', buildInfo: buildInfo
             
             echo "Dropping SNAPSHOT from the version"
             bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             
             echo "Building RELEASE Artifact"
-            bat([script: 'mvn clean install deploy'])
+            //bat([script: 'mvn clean install'])
+            rtMaven.run pom: 'spring-boot-ci-cd-demo/pom.xml', goals: 'clean install', buildInfo: buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
               downloadArtifactory('','','')
