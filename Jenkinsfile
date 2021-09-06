@@ -66,7 +66,15 @@ node () { //node('worker_node')
             server.publishBuildInfo buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
-              downloadArtifactory('','','')
+    
+              //def downloadSpec = readFile 'aql-download.json'
+              def downloadSpec = readFile 'download.json'
+              def uploadSpec = readFile 'props-upload.json'
+              //echo "${downloadSpec}"
+              //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
+
+              def buildInfo2 = server.download spec: downloadSpec
+              return buildInfo2
           }     
      }
       
