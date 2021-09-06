@@ -7,7 +7,7 @@ node () { //node('worker_node')
            gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'development', name: 'BRANCH', type: 'PT_BRANCH'),
            //string(defaultValue: '', name: 'VERSION', trim: true),
            choice(choices: ['DEV', 'QA' , 'PROD'], name: 'ENVIRONMENT'),
-           string(defaultValue: 'dapplnl064', name: 'SERVER', trim: true),
+           string(defaultValue: 'http://localhost:8082/', name: 'SERVER', trim: true),
            booleanParam(defaultValue: false,  name: 'ROLLBACK'),
            booleanParam(defaultValue: false,  name: 'DEPLOY_FROM_REPO')
       ]),
@@ -83,14 +83,14 @@ node () { //node('worker_node')
             if(!failNoOp){
                def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
                echo "${targetFolder}"
-               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
+               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
             }
          }else{
             def downloadSpec = readFile 'download-releases.json'
             buildInfo = server.download spec: downloadSpec, failNoOp: true
             if(!failNoOp){
                def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
-               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
+               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
             }
          }
      }
