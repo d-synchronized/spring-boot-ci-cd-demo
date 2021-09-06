@@ -1,0 +1,13 @@
+{
+    "files": [
+        {
+            "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/(*)/spring-boot-ci-cd-demo-*.war",
+            "target": "spring-boot-ci-cd-demo/SNAPSHOTS/{1}",
+            "recursive": "true",
+            "flat" : "true",
+            "build" : "spring-boot-job/LATEST"
+        }
+    ]
+ }
+ 
+ 

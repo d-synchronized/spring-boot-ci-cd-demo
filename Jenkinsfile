@@ -8,7 +8,8 @@ node () { //node('worker_node')
            //string(defaultValue: '', name: 'VERSION', trim: true),
            choice(choices: ['DEV', 'QA' , 'PROD'], name: 'ENVIRONMENT'),
            string(defaultValue: 'dapplnl064', name: 'SERVER', trim: true),
-           booleanParam(defaultValue: false,  name: 'ROLLBACK')
+           booleanParam(defaultValue: false,  name: 'ROLLBACK'),
+           booleanParam(defaultValue: false,  name: 'DEPLOY_FROM_REPO')
       ]),
       disableConcurrentBuilds()
    ])
@@ -45,7 +46,7 @@ node () { //node('worker_node')
          
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
-         if(DEPLOY_TO_DEV){
+         if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
             echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
             echo "Building SNAPSHOT Artifact"
@@ -60,8 +61,6 @@ node () { //node('worker_node')
             server.publishBuildInfo buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
-              def downloadSpec = readFile 'download.json'
-              buildInfo = server.download spec: downloadSpec
           }     
      }
       
@@ -71,9 +70,17 @@ node () { //node('worker_node')
          echo "artifact is ${pom.artifactId}"
          echo "artifact is ${pom.version}"
          
-         def downloadSpec = readFile 'download.json'
-         buildInfo = server.download spec: downloadSpec
+         DEPLOY_TO_PROD = "${params.ENVIRONMENT}"  == 'PROD' ? true : false
+         DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
+         DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
+         if(DEPLOY_TO_DEV) {
+            def downloadSpec = readFile 'download-snapshots.json'
+            buildInfo = server.download spec: downloadSpec
+         }else{
+            def downloadSpec = readFile 'download-releases.json'
+            buildInfo = server.download spec: downloadSpec
+         }
          echo "${downloadSpec}"
          //deploy adapters: [tomcat8(url: 'http://localhost:8666/', credentialsId: 'tomcat')], war: 'target/*.war'
      }
