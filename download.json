@@ -1,8 +1,11 @@
 {
- "files": [
-  {
-      "pattern": "cetera-maven-snapshots/spring-boot-ci-cd-demo.war",
-      "target": "Bazinga/demo/"
-    }
- ]
-}
+    "files": [
+        {
+            "pattern": "spring-boot-ci-cd-demo-*.war",
+            "target": "Bazinga/demo/",
+            "recursive": "false",
+            "flat" : "true",
+            "build" : "spring-boot-job/LATEST"
+        }
+    ]
+ }

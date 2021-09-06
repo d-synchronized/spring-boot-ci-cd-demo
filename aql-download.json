@@ -3,7 +3,6 @@
   {
     "aql": {
       "items.find": {
-        "repo": "cetera-maven-snapshots",
         "$or": [
           {
             "$and": [
@@ -12,7 +11,7 @@
                   "$match": "."
                 },
                 "name": {
-                  "$match": "​spring-boot-ci-cd-demo*.war"
+                  "$match": "​*Pipeline.zip"
                 }
               }
             ]
@@ -24,7 +23,7 @@
                   "$match": "*​"
                 },
                 "name": {
-                  "$match": "spring-boot-ci-cd-demo*"
+                  "$match": "*Pipeline.zip"
                 }
               }
             ]
@@ -32,7 +31,7 @@
         ]
       }
     },
-      "target": "spring-boot-ci-cd-demo/Artifactory/"
+      "target": "Bazinga/Artifactory/"
     }
  ]
 }

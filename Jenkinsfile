@@ -92,8 +92,8 @@ node () { //node('worker_node')
 }
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
-    def downloadSpec = readFile 'aql-download.json'
-    //def downloadSpec = readFile 'download.json'
+    //def downloadSpec = readFile 'aql-download.json'
+    def downloadSpec = readFile 'download.json'
     def uploadSpec = readFile 'props-upload.json'
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
