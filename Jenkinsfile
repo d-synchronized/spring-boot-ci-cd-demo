@@ -83,9 +83,9 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
     
     // Upload to Artifactory.
-    def buildInfo = server.upload spec: uploadSpec
+    //def buildInfo = server.upload spec: uploadSpec
     
-    //def buildInfo = server.download spec: downloadSpec
+    def buildInfo = server.download spec: downloadSpec
     return buildInfo
 }
 
