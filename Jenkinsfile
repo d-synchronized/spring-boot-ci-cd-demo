@@ -58,9 +58,6 @@ node () { //node('worker_node')
      }
      
        currentBuild.result = 'SUCCESS'
-       if("${WITH_ERROR}" == 'true'){
-          error("Build failed because of this and that..")
-       }
    } catch(Exception err) {
       echo "Error occurred while running the job '${env.JOB_NAME}' , $err"
       currentBuild.result = 'FALIURE'
