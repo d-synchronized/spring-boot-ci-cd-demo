@@ -75,7 +75,7 @@ node () { //node('worker_node')
 }
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
-    def downloadSpec = readFile 'jenkins-examples/pipeline-examples/resources/aql-download.json'
+    def downloadSpec = readFile 'aql-download.json'
 
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
