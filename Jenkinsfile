@@ -33,7 +33,7 @@ node () { //node('worker_node')
                     extensions: [], 
                     userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
                     
-          }else{
+          } else{
               echo "*******Skipping Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
           }
       }
@@ -46,6 +46,8 @@ node () { //node('worker_node')
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
          if(DEPLOY_TO_DEV || VERSION_SET){
+            echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
+             
             echo "Building SNAPSHOT Artifact"
             bat([script: 'mvn clean install deploy']) 
             
@@ -54,7 +56,9 @@ node () { //node('worker_node')
             
             echo "Building RELEASE Artifact"
             bat([script: 'mvn clean install deploy'])
-         }      
+         } else{
+              echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+          }     
      }
       
      
