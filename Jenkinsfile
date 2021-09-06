@@ -1,9 +1,6 @@
 //Groovy Pipeline
 node () { //node('worker_node')
 
-   def server
-   def rtMaven = Artifactory.newMavenBuild()
-   def buildInfo
 
    properties([
       parameters([
@@ -16,9 +13,11 @@ node () { //node('worker_node')
       disableConcurrentBuilds()
    ])
    
+   def server
+   def rtMaven = Artifactory.newMavenBuild()
+   def buildInfo
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
-   def previousPomVersion = ''
-   def tagVersionCreated = ''
+   
    try {
       stage('Clone') { 
          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
@@ -56,6 +55,7 @@ node () { //node('worker_node')
             echo "Building SNAPSHOT Artifact"
             //bat([script: 'mvn clean install']) 
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+            server.publishBuildInfo buildInfo
             
             echo "Dropping SNAPSHOT from the version"
             bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
@@ -63,6 +63,7 @@ node () { //node('worker_node')
             echo "Building RELEASE Artifact"
             //bat([script: 'mvn clean install'])
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+            server.publishBuildInfo buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
               downloadArtifactory('','','')
