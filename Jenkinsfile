@@ -47,7 +47,7 @@ node () { //node('worker_node')
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
          if("${params.BRANCH}" == 'development'){
-            if(DEPLOY_TO_DEV && !"${DEPLOY_FROM_REPO}"){
+            if(DEPLOY_TO_DEV && !"${params.DEPLOY_FROM_REPO}"){
                echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
                echo "Building SNAPSHOT Artifact"
