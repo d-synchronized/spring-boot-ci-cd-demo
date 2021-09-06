@@ -47,13 +47,13 @@ node () { //node('worker_node')
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
          DEPLOY_FROM_REPO = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
-         
+         pom = readMavenPom file: 'pom.xml'
          if("${params.BRANCH}" == 'development'){
             if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
-               pom = readMavenPom file: 'pom.xml'
                echo "Building SNAPSHOT Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
+               
                devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
                
                echo "Dropping SNAPSHOT from the version"
@@ -75,6 +75,7 @@ node () { //node('worker_node')
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
+               pom = readMavenPom file: 'pom.xml'
                qaBuildDownloadFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             }
             rtMaven.deployer.deployArtifacts = false
