@@ -20,6 +20,21 @@
 	<properties>
 		<java.version>11</java.version>
 	</properties>
+
+
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>cetera-maven-releases</name>
+			<url>https://dsync.jfrog.io/artifactory/cetera-maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>cetera-maven-snapshots</name>
+			<url>https://dsync.jfrog.io/artifactory/cetera-maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
