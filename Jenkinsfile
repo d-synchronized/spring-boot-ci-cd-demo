@@ -49,12 +49,11 @@ node () { //node('worker_node')
          DEPLOY_FROM_REPO = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
          pom = readMavenPom file: 'pom.xml'
          if("${params.BRANCH}" == 'development'){
+            devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
             if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
                echo "Building SNAPSHOT Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
-               
-               devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
                
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
