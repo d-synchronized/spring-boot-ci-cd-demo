@@ -67,6 +67,7 @@ node () { //node('worker_node')
             }  
          }//if development branch ends here
          else{
+            rtMaven.deployer.deployArtifacts = false
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
          }
      }
