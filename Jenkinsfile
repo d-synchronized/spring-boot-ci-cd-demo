@@ -61,11 +61,10 @@ node () { //node('worker_node')
                echo "Building RELEASE Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
-               
-               qaBuildDownloadFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
+               qaBuildDownloadFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             }  
          }//if development branch ends here
          else{
