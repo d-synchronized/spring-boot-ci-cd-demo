@@ -24,7 +24,7 @@
                   "$match": "*​"
                 },
                 "name": {
-                  "$match": "*spring-boot-ci-cd-demo.zip"
+                  "$match": "spring-boot-ci-cd-demo*.war"
                 }
               }
             ]
