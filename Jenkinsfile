@@ -80,7 +80,6 @@ node () { //node('worker_node')
          if(DEPLOY_TO_DEV) {
             def downloadSpec = readFile 'download-snapshots.json'
             buildInfo = server.download spec: downloadSpec, failNoOp: true
-            def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
             if(failNoOp){
                def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
                deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}"
@@ -88,7 +87,6 @@ node () { //node('worker_node')
          }else{
             def downloadSpec = readFile 'download-releases.json'
             buildInfo = server.download spec: downloadSpec, failNoOp: true
-            def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}/*.war"
             if(failNoOp){
                def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}/*.war"
                deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}"
