@@ -44,7 +44,7 @@ node () { //node('worker_node')
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
-         VERSION_SET = "${params.DEPLOY_FROM_REPO}" == false ? false : true
+         VERSION_SET = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
          echo "${VERSION_SET}"
          
          if("${params.BRANCH}" == 'development'){
