@@ -46,54 +46,62 @@ node () { //node('worker_node')
          
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
-         if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
-            echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
+         if("${params.BRANCH}" == 'development'){
+            if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
+               echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
-            echo "Building SNAPSHOT Artifact"
-            rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
-            server.publishBuildInfo buildInfo
+               echo "Building SNAPSHOT Artifact"
+               rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+               server.publishBuildInfo buildInfo
             
-            echo "Dropping SNAPSHOT from the version"
-            bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
+               echo "Dropping SNAPSHOT from the version"
+               bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             
-            echo "Building RELEASE Artifact"
+               echo "Building RELEASE Artifact"
+               rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+               server.publishBuildInfo buildInfo
+            } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
+               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+               echo "Dropping SNAPSHOT from the version"
+               bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
+            }  
+         }//if development branch ends here
+         else{
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
-            server.publishBuildInfo buildInfo
-         } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
-              echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
-              echo "Dropping SNAPSHOT from the version"
-              bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
-          }     
+         }
      }
       
      
      stage('Publish To Application/Web Server') {
          pom = readMavenPom file: 'pom.xml'
-         echo "artifact is ${pom.artifactId}"
-         echo "artifact is ${pom.version}"
-         
          DEPLOY_TO_PROD = "${params.ENVIRONMENT}"  == 'PROD' ? true : false
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
-         def failNoOp
-         if(DEPLOY_TO_DEV) {
-            def downloadSpec = readFile 'download-snapshots.json'
-            buildInfo = server.download spec: downloadSpec, failNoOp: true
-            if(!failNoOp){
-               def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
-               echo "${targetFolder}"
-               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
-            }
-         }else{
-            def downloadSpec = readFile 'download-releases.json'
-            buildInfo = server.download spec: downloadSpec, failNoOp: true
-            if(!failNoOp){
-               def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
-               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
-            }
+         if("${params.BRANCH}" == 'development'){
+            def failNoOp
+            if(DEPLOY_TO_DEV) {
+               def downloadSpec = readFile 'download-snapshots.json'
+               buildInfo = server.download spec: downloadSpec, failNoOp: true
+               if(!failNoOp){
+                 def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
+                 echo "${targetFolder}"
+                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
+               }
+           }else{
+              def downloadSpec = readFile 'download-releases.json'
+              buildInfo = server.download spec: downloadSpec, failNoOp: true
+              if(!failNoOp){
+                 def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
+                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
+              }
+           }
+         }//if development branch ends here
+         else{
+            def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
+            deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "target/*.war" , contextPath: "${pom.artifactId}"
          }
-     }
+     }//publish stage ends here
      
        currentBuild.result = 'SUCCESS'
    } catch(Exception err) {
