@@ -1,0 +1,9 @@
+{
+ "files": [
+  {
+      "pattern": "cetera-maven-snapshots/​spring-boot-ci-cd-demo*.war",
+      "target": "Bazinga/{1}/",
+      "props": "p1=v1;p2=v2"
+    }
+ ]
+}
