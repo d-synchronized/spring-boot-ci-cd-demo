@@ -20,7 +20,7 @@ node () { //node('worker_node')
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
    try {
       stage('Clone') { 
-         echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
+         echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}, deploy from repo ${params.DEPLOY_FROM_REPO}***"
          checkout([$class: 'GitSCM', 
                branches: [[name: "*/${params.BRANCH}"]], 
                extensions: [], 
