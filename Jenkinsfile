@@ -83,14 +83,14 @@ node () { //node('worker_node')
             if(!failNoOp){
                def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
                echo "${targetFolder}"
-               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war"
+               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
             }
          }else{
             def downloadSpec = readFile 'download-releases.json'
             buildInfo = server.download spec: downloadSpec, failNoOp: true
             if(!failNoOp){
                def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
-               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war"
+               deploy adapters: [tomcat8(url: 'http://localhost:8082/', credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
             }
          }
      }
