@@ -72,7 +72,6 @@ node () { //node('worker_node')
          else{
             devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
-               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
