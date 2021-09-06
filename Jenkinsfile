@@ -44,11 +44,10 @@ node () { //node('worker_node')
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
-         VERSION_SET = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
-         echo "${VERSION_SET}"
+         DEPLOY_FROM_REPO = "${params.DEPLOY_FROM_REPO}" == 'false' ? false : true
          
          if("${params.BRANCH}" == 'development'){
-            if(DEPLOY_TO_DEV && !"${params.DEPLOY_FROM_REPO}"){
+            if(DEPLOY_TO_DEV && !DEPLOY_FROM_REPO){
                echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
                echo "Building SNAPSHOT Artifact"
