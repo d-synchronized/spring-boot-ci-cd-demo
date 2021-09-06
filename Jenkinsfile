@@ -48,7 +48,7 @@ node () { //node('worker_node')
      
      stage('Publish To Application/Web Server') {
          pom = readMavenPom file: 'pom.xml'
-         echo 'artifact is pom.artifactId'
+         echo "artifact is ${pom.artifactId}"
      }
      
        currentBuild.result = 'SUCCESS'
