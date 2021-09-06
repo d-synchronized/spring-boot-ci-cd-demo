@@ -18,6 +18,8 @@ node () { //node('worker_node')
    def rtMaven = Artifactory.newMavenBuild()
    def buildInfo
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
+   def devBuildDownloadFolder
+   def qaBuildDownloadFolder
    try {
       stage('Clone') { 
          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}, deploy from repo ${params.DEPLOY_FROM_REPO}***"
@@ -51,23 +53,28 @@ node () { //node('worker_node')
                echo "Building SNAPSHOT Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
-            
+               devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             
                echo "Building RELEASE Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
+               
+               qaBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
             } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             }  
          }//if development branch ends here
          else{
+            devBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
+               
+               qaBuildDownloadFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
             }
             rtMaven.deployer.deployArtifacts = false
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
@@ -87,21 +94,19 @@ node () { //node('worker_node')
                def downloadSpec = readFile 'download-snapshots.json'
                buildInfo = server.download spec: downloadSpec, failNoOp: true
                if(!failNoOp){
-                 def targetFolder = "${pom.artifactId}/SNAPSHOTS/${pom.version}"
-                 echo "${targetFolder}"
-                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
+                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${devBuildDownloadFolder}/*.war", contextPath: "${pom.artifactId}"
                }
            }else{
               def downloadSpec = readFile 'download-releases.json'
               buildInfo = server.download spec: downloadSpec, failNoOp: true
               if(!failNoOp){
-                 def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
-                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war" , contextPath: "${pom.artifactId}"
+                 targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
+                 deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${qaBuildDownloadFolder}/*.war" , contextPath: "${pom.artifactId}"
               }
            }
          }//if development branch ends here
          else{
-            def targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
+            targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "target/*.war" , contextPath: "${pom.artifactId}"
          }
      }//publish stage ends here
