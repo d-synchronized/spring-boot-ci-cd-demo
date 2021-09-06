@@ -85,7 +85,7 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     // Upload to Artifactory.
     def buildInfo = server.upload spec: uploadSpec
     
-    def buildInfo = server.download spec: downloadSpec
+    //def buildInfo = server.download spec: downloadSpec
     return buildInfo
 }
 
