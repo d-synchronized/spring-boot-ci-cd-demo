@@ -2,7 +2,7 @@
     "files": [
         {
             "pattern": "cetera-maven-releases/com/example/spring-boot-ci-cd-demo/(*)/spring-boot-ci-cd-demo-*.war",
-            "target": "spring-boot-ci-cd-demo/RELEASES/{1}",
+            "target": "spring-boot-ci-cd-demo/RELEASES/{1}/",
             "recursive": "true",
             "flat" : "true",
             "build" : "spring-boot-job/LATEST"
