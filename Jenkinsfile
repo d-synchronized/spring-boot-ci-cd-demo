@@ -1,5 +1,8 @@
 //Groovy Pipeline
 node () { //node('worker_node')
+
+   def rtMaven = Artifactory.newMavenBuild()
+
    properties([
       parameters([
            gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'development', name: 'BRANCH', type: 'PT_BRANCH'),
@@ -82,6 +85,7 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     
     // Upload to Artifactory.
     def buildInfo = server.upload spec: uploadSpec
+    server.publishBuildInfo buildInfo
     
     def buildInfo1 = server.download spec: downloadSpec
     buildInfo1.append buildInfo
