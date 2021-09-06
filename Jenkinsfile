@@ -27,9 +27,9 @@ node () { //node('worker_node')
       }
       
       stage('Build & Deploy') {
-         DEPLOY_TO_PROD = "${params.SERVER_DEPLOYMENT_OPTION}"  == 'PROD' ? true : false
+         DEPLOY_TO_PROD = "${params.ENVIRONMENT}"  == 'PROD' ? true : false
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
-         DEPLOY_TO_DEV = "${params.SERVER_DEPLOYMENT_OPTION}"  == 'DEV' ? true : false
+         DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
