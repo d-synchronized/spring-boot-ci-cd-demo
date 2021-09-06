@@ -55,14 +55,14 @@ node () { //node('worker_node')
              
             echo "Building SNAPSHOT Artifact"
             //bat([script: 'mvn clean install']) 
-            rtMaven.run pom: 'spring-boot-ci-cd-demo/pom.xml', goals: 'clean install', buildInfo: buildInfo
+            rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             
             echo "Dropping SNAPSHOT from the version"
             bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             
             echo "Building RELEASE Artifact"
             //bat([script: 'mvn clean install'])
-            rtMaven.run pom: 'spring-boot-ci-cd-demo/pom.xml', goals: 'clean install', buildInfo: buildInfo
+            rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
               downloadArtifactory('','','')
