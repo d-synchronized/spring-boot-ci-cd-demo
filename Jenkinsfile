@@ -5,10 +5,10 @@ node () { //node('worker_node')
    properties([
       parameters([
            gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'development', name: 'BRANCH', type: 'PT_BRANCH'),
-           string(defaultValue: '', name: 'VERSION', trim: true),
+           //string(defaultValue: '', name: 'VERSION', trim: true),
            choice(choices: ['DEV', 'QA' , 'PROD'], name: 'ENVIRONMENT'),
            string(defaultValue: 'dapplnl064', name: 'SERVER', trim: true),
-           booleanParam(defaultValue: false,  name: 'ROLLBACK'),
+           booleanParam(defaultValue: false,  name: 'ROLLBACK')
       ]),
       disableConcurrentBuilds()
    ])
@@ -17,20 +17,16 @@ node () { //node('worker_node')
    def rtMaven = Artifactory.newMavenBuild()
    def buildInfo
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
-   
    try {
       stage('Clone') { 
          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
-             //bat "git config user.name 'Dishant Anand'"
-             //bat "git config user.email d.synchronized@gmail.com"
-          
          checkout([$class: 'GitSCM', 
-                    branches: [[name: "*/${params.BRANCH}"]], 
-                    extensions: [], 
-                    userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
+               branches: [[name: "*/${params.BRANCH}"]], 
+               extensions: [], 
+               userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
       }
       
-      stage ('Artifactory configuration') {
+      stage ('Artifactory Configuration') {
         // Obtain an Artifactory server instance, defined in Jenkins --> Manage Jenkins --> Configure System:
         server = Artifactory.server 'DSYNC_JFROG_INSTANCE'
 
@@ -49,11 +45,10 @@ node () { //node('worker_node')
          
          VERSION_SET = "${params.VERSION}" == '' ? false : true
          
-         if(DEPLOY_TO_DEV || VERSION_SET){
+         if(DEPLOY_TO_DEV){
             echo "*******Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"         
              
             echo "Building SNAPSHOT Artifact"
-            //bat([script: 'mvn clean install']) 
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             server.publishBuildInfo buildInfo
             
@@ -61,20 +56,12 @@ node () { //node('worker_node')
             bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
             
             echo "Building RELEASE Artifact"
-            //bat([script: 'mvn clean install'])
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             server.publishBuildInfo buildInfo
          } else{
               echo "*******Skipping Build & Deploy, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
-    
-              //def downloadSpec = readFile 'aql-download.json'
               def downloadSpec = readFile 'download.json'
-              def uploadSpec = readFile 'props-upload.json'
-              //echo "${downloadSpec}"
-              //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
-
-              def buildInfo2 = server.download spec: downloadSpec
-              return buildInfo2
+              buildInfo = server.download spec: downloadSpec
           }     
      }
       
