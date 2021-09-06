@@ -1,0 +1,9 @@
+{
+  "files": [
+    {
+      "pattern": "target/spring-boot-ci-cd-demo.war",
+      "target": "cetera-maven-snapshots",
+      "props": "p1=v1;p2=v2"
+    }
+  ]
+}

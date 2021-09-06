@@ -81,6 +81,11 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
 
     def server = Artifactory.server("DSYNC_JFROG_INSTANCE")
+    
+    def uploadSpec = readFile 'exclude-upload.json'
+    // Upload to Artifactory.
+    def buildInfo = server.upload spec: uploadSpec
+    
     def buildInfo = server.download spec: downloadSpec
     return buildInfo
 }
