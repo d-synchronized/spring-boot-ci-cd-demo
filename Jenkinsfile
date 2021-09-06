@@ -70,6 +70,12 @@ node () { //node('worker_node')
          pom = readMavenPom file: 'pom.xml'
          echo "artifact is ${pom.artifactId}"
          echo "artifact is ${pom.version}"
+         
+         def downloadSpec = readFile 'download.json'
+         buildInfo = server.download spec: downloadSpec
+         
+         echo "${buildInfo}"
+         //deploy adapters: [tomcat8(url: 'http://localhost:8666/', credentialsId: 'tomcat')], war: 'target/*.war'
      }
      
        currentBuild.result = 'SUCCESS'
