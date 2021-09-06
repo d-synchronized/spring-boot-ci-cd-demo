@@ -1,7 +1,7 @@
 {
  "files": [
   {
-      "pattern": "cetera-maven-snapshots/​spring-boot-ci-cd-demo*.war",
+      "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/100.0.0-SNAPSHOT/spring-boot-ci-cd-demo-100.0.0-20210906.154820-1.war",
       "target": "Bazinga/{1}/",
       "props": "p1=v1;p2=v2"
     }
