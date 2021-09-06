@@ -78,7 +78,7 @@ def downloadArtifactory(String localPath, String repository, String remotePath) 
     def downloadSpec = """{
         "files": [
                 {
-                    "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/0.0.1-SNAPSHOT/spring-boot-ci-cd-demo-0.0.1-20210906.104257-1.war",
+                    "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/0.0.1-SNAPSHOT/spring-boot-ci-cd-demo-*.war",
                     "target": "spring-boot-ci-cd-demo",
                 }
             ]
