@@ -16,14 +16,26 @@ node () { //node('worker_node')
    def tagVersionCreated = ''
    try {
       stage('Checkout Source Code') { 
-          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
-          //bat "git config user.name 'Dishant Anand'"
-          //bat "git config user.email d.synchronized@gmail.com"
+         DEPLOY_TO_PROD = "${params.ENVIRONMENT}"  == 'PROD' ? true : false
+         DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
+         DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
+         
+         VERSION_SET = "${params.VERSION}" == '' ? false : true
+         
+         if(DEPLOY_TO_DEV || VERSION_SET){
+             cho "*******Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+             echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}***"
+             //bat "git config user.name 'Dishant Anand'"
+             //bat "git config user.email d.synchronized@gmail.com"
           
-          checkout([$class: 'GitSCM', 
+            checkout([$class: 'GitSCM', 
                     branches: [[name: "*/${params.BRANCH}"]], 
                     extensions: [], 
                     userRemoteConfigs: [[credentialsId: 'github-credentials', url: "${repoUrl}"]]])
+                    
+          }else{
+              echo "*******Skipping Source Code Checkout, Version Set  ${VERSION_SET} , Environment ${params.ENVIRONMENT}********"
+          }
       }
       
       stage('Build & Deploy') {
