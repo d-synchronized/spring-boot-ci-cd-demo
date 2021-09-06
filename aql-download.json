@@ -1,0 +1,38 @@
+{
+ "files": [
+  {
+    "aql": {
+      "items.find": {
+        "repo": "cetera-maven-snapshots",
+        "$or": [
+          {
+            "$and": [
+              {
+                "path": {
+                  "$match": "."
+                },
+                "name": {
+                  "$match": "​spring-boot-ci-cd-demo*.war"
+                }
+              }
+            ]
+          },
+          {
+            "$and": [
+              {
+                "path": {
+                  "$match": "*​"
+                },
+                "name": {
+                  "$match": "*spring-boot-ci-cd-demo.zip"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+      "target": "spring-boot-ci-cd-demo/Artifactory/"
+    }
+ ]
+}

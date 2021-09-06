@@ -75,14 +75,7 @@ node () { //node('worker_node')
 }
 
 def downloadArtifactory(String localPath, String repository, String remotePath) {
-    def downloadSpec = """{
-        "files": [
-                {
-                    "pattern": "cetera-maven-snapshots/com/example/spring-boot-ci-cd-demo/0.0.1-SNAPSHOT/spring-boot-ci-cd-demo-*.war",
-                    "target": "spring-boot-ci-cd-demo",
-                }
-            ]
-        }"""
+    def downloadSpec = readFile 'jenkins-examples/pipeline-examples/resources/aql-download.json'
 
     //echo "${downloadSpec}"
     //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
