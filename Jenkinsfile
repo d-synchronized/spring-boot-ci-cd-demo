@@ -101,7 +101,7 @@ node () { //node('worker_node')
               def downloadSpec = readFile 'download-releases.json'
               buildInfo = server.download spec: downloadSpec, failNoOp: true
               if(!failNoOp){
-                 targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
+                 echo "${qaBuildDownloadFolder}"
                  deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${qaBuildDownloadFolder}/*.war" , contextPath: "${pom.artifactId}"
               }
            }
