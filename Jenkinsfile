@@ -139,7 +139,6 @@ node () { //node('worker_node')
                                               }
                                            ]
                                }"""
-            echo "${downloadSpec}"
             buildInfo = server.download spec: downloadSpec, failNoOp: true                      
          }else {
              echo "*****SKIPPING 'Download Artifact Step' for Branch - ${params.BRANCH}, Branch - ${params.BRANCH} *******"
