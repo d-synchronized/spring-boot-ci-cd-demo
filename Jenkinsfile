@@ -16,8 +16,10 @@ node () { //node('worker_node')
    def rtMaven = Artifactory.newMavenBuild()
    def buildInfo
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
-   def devBuildDownloadFolder
-   def qaBuildDownloadFolder
+   
+   def artifactId
+   def devPomVersion
+   def qaPomVersion
    
    def targetFolder
    def pattern
@@ -53,23 +55,27 @@ node () { //node('worker_node')
          VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
          
          pom = readMavenPom file: 'pom.xml'
+         devPomVersion = "${pom.version}"
+         artifactId = "${pom.artifactId}"
          if("${params.BRANCH}" == 'development' && !DEPLOY_FROM_REPO && !VERSION_REQUESTED){
             if(DEPLOY_TO_DEV){
                echo "Building SNAPSHOT Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
                
-               echo "Dropping SNAPSHOT from the version"
+               echo "****Dropping SNAPSHOT from the version***"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                echo "Building RELEASE Artifact"
                rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
                server.publishBuildInfo buildInfo
+               pom = readMavenPom file: 'pom.xml'
             } else if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
                pom = readMavenPom file: 'pom.xml'
             }  
+            qaPomVersion = ${params.VERSION}
          }//if development branch ends here
          else{
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
@@ -77,6 +83,7 @@ node () { //node('worker_node')
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
                pom = readMavenPom file: 'pom.xml'
+               qaPomVersion = ${params.VERSION}
             }
             rtMaven.deployer.deployArtifacts = false
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
@@ -86,17 +93,16 @@ node () { //node('worker_node')
      
      stage('Download Artifact') {
          if("${params.BRANCH}" == 'development'){
-             pom = readMavenPom file: 'pom.xml'
              VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
-         
-             VERSION_STRING = VERSION_REQUESTED ? "${params.VERSION}" : "${pom.version}"
+             VERSION_STRING = VERSION_REQUESTED ? "${params.VERSION}" : DEPLOY_TO_DEV ? "${devPomVersion}" : "${qaPomVersion}"
              build =   VERSION_REQUESTED ? "${env.JOB_NAME}" : "${env.JOB_NAME}/LATEST"
+             
              if(DEPLOY_TO_DEV) {
-                targetFolder = "${pom.artifactId}/SNAPSHOTS/${VERSION_STRING}/"
-                pattern = "cetera-maven-snapshots/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
+                targetFolder = "${artifactId}/SNAPSHOTS/${VERSION_STRING}/"
+                pattern = "cetera-maven-snapshots/com/example/${artifactId}/${VERSION_STRING}/${artifactId}-*.war"
              }else{
-                targetFolder = "${pom.artifactId}/RELEASES/${VERSION_STRING}/"
-                pattern = "cetera-maven-releases/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
+                targetFolder = "${artifactId}/RELEASES/${VERSION_STRING}/"
+                pattern = "cetera-maven-releases/com/example/${artifactId}/${VERSION_STRING}/${artifactId}-*.war"
              }
          
              echo "Downloading ARTIFACT Version ${VERSION_STRING} , Artitfactory Pattern ${pattern}  ,Target Loction  ${targetFolder},BuildName  ${env.JOB_NAME}"
@@ -120,10 +126,10 @@ node () { //node('worker_node')
      stage('Publish To Application/Web Server') {
          pom = readMavenPom file: 'pom.xml'
          if("${params.BRANCH}" != 'development'){
-            deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "target/*.war", contextPath: "${pom.artifactId}"
+            deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "target/*.war", contextPath: "${artifactId}"
          }else{
             if(!failNoOp){
-               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
+               deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${artifactId}"
             }
          }
       }//Publish To Application/Web Server stage ends here
