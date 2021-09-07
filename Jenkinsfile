@@ -85,7 +85,7 @@ node () { //node('worker_node')
      
      
      stage('Download Artifact') {
-         if("${params.BRANCH}" != 'development'){
+         if("${params.BRANCH}" == 'development'){
              pom = readMavenPom file: 'pom.xml'
              VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
          
