@@ -77,10 +77,10 @@ node () { //node('worker_node')
             }  
             qaPomVersion = "${pom.version}"
          }//if development branch ends here
-         else if ("${params.BRANCH}" != 'development' && VERSION_REQUESTED){
+         else if ("${params.BRANCH}" != 'development' && (VERSION_REQUESTED || DEPLOY_FROM_REPO)){
             echo "Artifacts are not uploaded for branches other than Development Branch, Please try again!"
             currentBuild.result = 'FALIURE'
-            error("Invalid Value - Version! , Reason - Artifacts are not uploaded for branches other than Development Branch, Please try again!")
+            error("Can not select DEPLOY_FROM_REPO / VERSION for branches other than Development Branch, Please try again without VERSION and DEPLOY_FROM_REPO")
          } else if (!DEPLOY_FROM_REPO && !VERSION_REQUESTED){
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
