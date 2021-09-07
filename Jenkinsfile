@@ -88,8 +88,7 @@ node () { //node('worker_node')
          pom = readMavenPom file: 'pom.xml'
          VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
          
-         VERSION_STRING = VERSION_REQUESTED ? "${pom.version}" : "${params.VERSION}"
-         echo "downloading artifact"
+         VERSION_STRING = VERSION_REQUESTED ? "${params.VERSION}" : "${pom.version}"
            
          if(DEPLOY_TO_DEV) {
              targetFolder = "${pom.artifactId}/SNAPSHOTS/${VERSION_STRING}/"
@@ -99,7 +98,7 @@ node () { //node('worker_node')
              pattern = "cetera-maven-releases/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
          }
          
-         echo "pattern ${pattern}  ,Target  ${targetFolder},build  ${env.JOB_NAME}"
+         echo "Downloading ARTIFACT Version ${VERSION_STRING} , Artitfactory Pattern ${pattern}  ,Target Loction  ${targetFolder},BuildName  ${env.JOB_NAME}"
          def downloadSpec = """{
                                   "files": [
                                               {
