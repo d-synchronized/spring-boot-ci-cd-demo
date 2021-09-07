@@ -112,7 +112,10 @@ node () { //node('worker_node')
                                                 "pattern": "${pattern}",
                                                 "target": "${targetFolder}",
                                                 "recursive": "true",
-                                                "flat" : "true"
+                                                "flat" : "true",
+                                                "sortBy" : "created",
+                                                "sortOrder" : "desc",
+                                                "limit": "1"
                                               }
                                            ]
                                }"""
