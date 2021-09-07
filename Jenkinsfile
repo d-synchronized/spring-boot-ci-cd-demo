@@ -55,12 +55,12 @@ node () { //node('worker_node')
          VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
          
          if(VERSION_REQUESTED 
-            && (!DEPLOY_TO_DEV && VERSION_REQUESTED.contains("SNAPSHOT"))){
+            && (!DEPLOY_TO_DEV && "${params.VERSION}".contains("SNAPSHOT"))){
            error("Invalid Version! , Reason - Version should not contain SNAPSHOT, for all the build required other than ${params.ENVIRONMENT} Environment")
          }
          
          if(VERSION_REQUESTED 
-            && (DEPLOY_TO_DEV && !VERSION_REQUESTED.contains("SNAPSHOT"))){
+            && (DEPLOY_TO_DEV && !"${params.VERSION}".contains("SNAPSHOT"))){
            error("Invalid Version! , Reason - Version should contain SNAPSHOT, for all the build required for ${params.ENVIRONMENT} Environment")
          }
          
