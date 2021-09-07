@@ -100,13 +100,13 @@ node () { //node('worker_node')
          }
            
          def downloadSpec = """{
-                                  'files': [
+                                  "files": [
                                               {
-                                                'pattern': "${pattern}",
-                                                'target': "${targetFolder}",
-                                                'recursive': 'true',
-                                                'flat' : 'true',
-                                                'build' : "${env.JOB_NAME}/LATEST"
+                                                "pattern": "${pattern}",
+                                                "target": "${targetFolder}",
+                                                "recursive": "true",
+                                                "flat" : "true",
+                                                "build" : "${env.JOB_NAME}/LATEST"
                                               }
                                            ]
                             }"""
