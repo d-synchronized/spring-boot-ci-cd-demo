@@ -112,8 +112,7 @@ node () { //node('worker_node')
                                                 "pattern": "${pattern}",
                                                 "target": "${targetFolder}",
                                                 "recursive": "true",
-                                                "flat" : "true",
-                                                "build" : "${build}"
+                                                "flat" : "true"
                                               }
                                            ]
                                }"""
