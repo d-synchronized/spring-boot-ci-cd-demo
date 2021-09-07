@@ -77,7 +77,7 @@ node () { //node('worker_node')
             }  
             qaPomVersion = "${pom.version}"
          }//if development branch ends here
-         else{
+         else if(!VERSION_REQUESTED){
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
@@ -119,6 +119,8 @@ node () { //node('worker_node')
                                }"""
             echo "${downloadSpec}"
             buildInfo = server.download spec: downloadSpec, failNoOp: true                      
+         }else {
+             echo "*****SKIPPING 'Download Artifact Step' for Branch - ${params.BRANCH}, Branch - ${params.BRANCH} *******"
          }
      }//Download Artifact ends here
       
