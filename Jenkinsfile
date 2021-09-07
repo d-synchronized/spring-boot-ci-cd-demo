@@ -81,7 +81,7 @@ node () { //node('worker_node')
             echo "Artifacts are not uploaded for branches other than Development Branch, Please try again!"
             currentBuild.result = 'FALIURE'
             error("Invalid Value - Version! , Reason - Artifacts are not uploaded for branches other than Development Branch, Please try again!")
-         } else if (!VERSION_REQUESTED){
+         } else if (!DEPLOY_FROM_REPO && !VERSION_REQUESTED){
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
