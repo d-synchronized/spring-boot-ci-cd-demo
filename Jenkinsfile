@@ -1,11 +1,9 @@
 //Groovy Pipeline
 node () { //node('worker_node')
-
-
    properties([
       parameters([
            gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'development', name: 'BRANCH', type: 'PT_BRANCH'),
-           //string(defaultValue: '', name: 'VERSION', trim: true),
+           string(defaultValue: '', name: 'VERSION', trim: true),
            choice(choices: ['DEV', 'QA' , 'PROD'], name: 'ENVIRONMENT'),
            string(defaultValue: 'http://localhost:8082/', name: 'SERVER', trim: true),
            booleanParam(defaultValue: false,  name: 'ROLLBACK'),
@@ -20,6 +18,9 @@ node () { //node('worker_node')
    def repoUrl = 'https://github.com/d-synchronized/spring-boot-ci-cd-demo.git'
    def devBuildDownloadFolder
    def qaBuildDownloadFolder
+   
+   def targetFolder
+   def pattern
    try {
       stage('Clone') { 
          echo "***Checking out source code from repo url ${repoUrl},branchName ${params.BRANCH}, deploy from repo ${params.DEPLOY_FROM_REPO}***"
@@ -81,6 +82,40 @@ node () { //node('worker_node')
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
          }
      }
+     
+     
+     stage('Download Artifact') {
+         pom = readMavenPom file: 'pom.xml'
+         VERSION_REQUESTED = "${params.VERSION}"  != '' ? true : false
+         
+         VERSION_STRING = VERSION_REQUESTED ? "${pom.version}" : "${params.VERSION}"
+         echo "downloading artifact"
+           
+         if(DEPLOY_TO_DEV) {
+             targetFolder = "${pom.artifactId}/SNAPSHOTS/${VERSION_STRING}/"
+             pattern = "cetera-maven-snapshots/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
+         }else{
+             targetFolder = "${pom.artifactId}/RELEASES/${VERSION_STRING}/"
+             pattern = "cetera-maven-releases/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
+         }
+           
+         def downloadSpec = """{
+                                  'files': [
+                                              {
+                                                'pattern': "${pattern}",
+                                                'target': "${targetFolder}",
+                                                'recursive': 'true',
+                                                'flat' : 'true',
+                                                'build' : "${env.JOB_NAME}/LATEST"
+                                              }
+                                           ]
+                            }"""
+         def failNoOp
+         buildInfo = server.download spec: downloadSpec, failNoOp: true
+         if(!failNoOp){
+            deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${targetFolder}/*.war", contextPath: "${pom.artifactId}"
+         }
+     }//Download Artifact ends here
       
      
      stage('Publish To Application/Web Server') {
@@ -89,6 +124,7 @@ node () { //node('worker_node')
          DEPLOY_TO_QA = "${params.ENVIRONMENT}" == 'QA' ? true : false
          DEPLOY_TO_DEV = "${params.ENVIRONMENT}"  == 'DEV' ? true : false
          
+         if(false){
          if("${params.BRANCH}" == 'development'){
             def failNoOp
             if(DEPLOY_TO_DEV) {
@@ -100,6 +136,7 @@ node () { //node('worker_node')
            }else{
               def downloadSpec = readFile 'download-releases.json'
               buildInfo = server.download spec: downloadSpec, failNoOp: true
+              echo "${buildInfo}"
               if(!failNoOp){
                  echo "${qaBuildDownloadFolder}"
                  deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "${qaBuildDownloadFolder}/*.war" , contextPath: "${pom.artifactId}"
@@ -109,7 +146,7 @@ node () { //node('worker_node')
          else{
             targetFolder = "${pom.artifactId}/RELEASES/${pom.version}"
             deploy adapters: [tomcat8(url: "${SERVER}", credentialsId: 'tomcat')], war: "target/*.war" , contextPath: "${pom.artifactId}"
-         }
+         }}//false if ends here
      }//publish stage ends here
      
        currentBuild.result = 'SUCCESS'
@@ -124,34 +161,4 @@ node () { //node('worker_node')
        //deleteDir()
    }
    
-}
-
-def downloadArtifactory(String localPath, String repository, String remotePath) {
-    def server = Artifactory.server 'DSYNC_JFROG_INSTANCE'
-    
-    //def downloadSpec = readFile 'aql-download.json'
-    def downloadSpec = readFile 'download.json'
-    def uploadSpec = readFile 'props-upload.json'
-    //echo "${downloadSpec}"
-    //echo "Artifactory Download: ${repository}/${remotePath} -> ${localPath}"
-
-    def buildInfo2 = server.download spec: downloadSpec, buildInfo: buildInfo
-    return buildInfo2
-}
-
-def deleteTag(String tagVersionCreated) { 
-      echo "deleting the TAG ${tagVersionCreated}"
-      withCredentials([usernamePassword(credentialsId: 'github-account', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-          bat "git push --delete https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/d-synchronized/ci-cd-demo.git ${tagVersionCreated}"
-      }
-}
-   
-def revertParentPOM(String previousPomVersion) {
-      echo "reverting pom version to ${previousPomVersion}"
-      bat "mvn -U versions:set -DnewVersion=${previousPomVersion}"
-      withCredentials([usernamePassword(credentialsId: 'github-account', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-          bat "git add pom.xml"
-          bat "git commit -m \"Reverting pom version from ${NEW_VERSION} to ${projectVersion} \""
-          bat "git push https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/d-synchronized/ci-cd-demo.git HEAD:${BRANCH}"
-      }
 }
