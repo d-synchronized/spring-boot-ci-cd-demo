@@ -3,11 +3,10 @@ node () { //node('worker_node')
    properties([
       parameters([
            gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'development', name: 'BRANCH', type: 'PT_BRANCH'),
-           string(defaultValue: '', name: 'VERSION', trim: true),
            choice(choices: ['DEV', 'QA' , 'PROD'], name: 'ENVIRONMENT'),
            string(defaultValue: 'http://localhost:8082/', name: 'SERVER', trim: true),
-           booleanParam(defaultValue: false,  name: 'ROLLBACK'),
-           booleanParam(defaultValue: false,  name: 'DEPLOY_FROM_REPO')
+           string(defaultValue: '', name: 'VERSION', trim: true, description: 'if specified, artifact will be downloaded from Repository'),
+           booleanParam(defaultValue: false,  name: 'DEPLOY_FROM_REPO', description: 'if specified and version not selected, most recent artifact will be downloaded from Repository')
       ]),
       disableConcurrentBuilds()
    ])
