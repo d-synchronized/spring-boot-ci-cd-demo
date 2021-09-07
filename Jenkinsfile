@@ -107,7 +107,7 @@ node () { //node('worker_node')
                                                 "target": "${targetFolder}",
                                                 "recursive": "true",
                                                 "flat" : "true",
-                                                "build" : "${env.JOB_NAME}/LATEST"
+                                                "build" : "${env.JOB_NAME}"
                                               }
                                            ]
                             }"""
