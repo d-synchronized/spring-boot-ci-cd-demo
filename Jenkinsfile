@@ -90,7 +90,7 @@ node () { //node('worker_node')
             echo "Artifacts are not uploaded for branches other than Development Branch, Please try again!"
             currentBuild.result = 'FALIURE'
             error("Can not select DEPLOY_FROM_REPO / VERSION for branches other than Development Branch, Please try again without VERSION and DEPLOY_FROM_REPO")
-         } else if (!DEPLOY_FROM_REPO && !VERSION_REQUESTED){
+         } else if (!VERSION_REQUESTED){
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
                echo "Dropping SNAPSHOT from the version"
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
@@ -98,8 +98,10 @@ node () { //node('worker_node')
                pom = readMavenPom file: 'pom.xml'
                qaPomVersion = "${pom.version}"
             }
-            rtMaven.deployer.deployArtifacts = false
-            rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+            if(!DEPLOY_FROM_REPO){
+               rtMaven.deployer.deployArtifacts = false
+               rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
+            }
          }
      }
      
