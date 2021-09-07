@@ -99,7 +99,7 @@ node () { //node('worker_node')
              pattern = "cetera-maven-releases/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
          }
          
-         echo "${pattern}"
+         echo "pattern ${pattern}  ,Target  ${targetFolder},build  ${env.JOB_NAME}"
          def downloadSpec = """{
                                   "files": [
                                               {
