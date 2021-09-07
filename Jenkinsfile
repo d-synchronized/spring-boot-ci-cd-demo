@@ -113,7 +113,7 @@ node () { //node('worker_node')
                                                 "target": "${targetFolder}",
                                                 "recursive": "true",
                                                 "flat" : "true",
-                                                "sortBy" : "created",
+                                                "sortBy" : [ "created" ],
                                                 "sortOrder" : "desc",
                                                 "limit": "1"
                                               }
