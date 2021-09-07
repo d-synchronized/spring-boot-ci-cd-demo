@@ -104,7 +104,12 @@ node () { //node('worker_node')
                 targetFolder = "${artifactId}/RELEASES/${VERSION_STRING}/"
                 pattern = "cetera-maven-releases/com/example/${artifactId}/${VERSION_STRING}/${artifactId}-*.war"
              }
-         
+             
+             dir ("${targetFolder}") {
+               echo "deleting the target folder ${targetFolder}"
+               deleteDir()
+             }
+             
              echo "Downloading ARTIFACT Version ${VERSION_STRING} , Artitfactory Pattern ${pattern}  ,Target Loction  ${targetFolder},BuildName  ${env.JOB_NAME}"
              def downloadSpec = """{
                                   "files": [
