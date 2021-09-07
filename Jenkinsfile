@@ -110,6 +110,7 @@ node () { //node('worker_node')
                                               }
                                            ]
                             }"""
+         echo "${downloadSpec}"
          def failNoOp
          buildInfo = server.download spec: downloadSpec, failNoOp: true
          if(!failNoOp){
