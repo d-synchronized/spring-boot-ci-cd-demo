@@ -98,7 +98,8 @@ node () { //node('worker_node')
              targetFolder = "${pom.artifactId}/RELEASES/${VERSION_STRING}/"
              pattern = "cetera-maven-releases/com/example/${pom.artifactId}/${params.VERSION}/${pom.artifactId}-*.war"
          }
-           
+         
+         echo '${pattern}'
          def downloadSpec = """{
                                   "files": [
                                               {
