@@ -75,7 +75,7 @@ node () { //node('worker_node')
                
                pom = readMavenPom file: 'pom.xml'
             }  
-            qaPomVersion = ${params.VERSION}
+            qaPomVersion = "${pom.version}"
          }//if development branch ends here
          else{
             if(DEPLOY_TO_QA || DEPLOY_TO_PROD){
@@ -83,7 +83,7 @@ node () { //node('worker_node')
                bat "mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false"
                
                pom = readMavenPom file: 'pom.xml'
-               qaPomVersion = ${params.VERSION}
+               qaPomVersion = "${pom.version}"
             }
             rtMaven.deployer.deployArtifacts = false
             rtMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
